@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sine Wave Sound Demo</title>
+  <style>
+    :root {
+      --bg1: #07153a;
+      --bg2: #102a72;
+      --card: rgba(255, 255, 255, 0.08);
+      --border: rgba(255, 255, 255, 0.18);
+      --text: #ffffff;
+      --muted: rgba(255, 255, 255, 0.82);
+      --accent: #d7a7ff;
+      --accent-2: #8ed8ff;
+      --button-text: #0b1b4d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #143c95 0%, var(--bg1) 42%, #050d24 100%);
+      color: var(--text);
+      margin: 0;
+      padding: 28px;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.3rem;
+      letter-spacing: 0.02em;
+    }
+
+    .sub {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 14px;
+    }
+
+    .formula {
+      font-size: 1.18rem;
+      line-height: 1.45;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 14px 16px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+    }
+
+    .slider-group {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 16px;
+    }
+
+    label {
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .value {
+      min-width: 92px;
+      text-align: right;
+      font-weight: bold;
+      color: var(--accent-2);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      background: white;
+      color: var(--button-text);
+      border: none;
+      padding: 12px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.96rem;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+
+    button:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .button-secondary {
+      background: rgba(255,255,255,0.14);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .quick-guide {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border-left: 4px solid var(--accent);
+      border-radius: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.96rem;
+    }
+
+    canvas {
+      width: 100%;
+      height: 340px;
+      background: linear-gradient(160deg, #081533, #0d2561 55%, #163d98);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.16);
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+    }
+
+    .wave1 { background: var(--accent); }
+    .wave2 { background: #8ed8ff; }
+    .combined { background: #ffffff; }
+
+    .tip-box {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      body {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>Sine Wave Sound Demo</h1>
+      <div class="sub">Interactive sound + graph demo for amplitude, frequency, and wave combination</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="section-title">Equation</div>
+        <div class="formula" id="formula">y = 0.50 sin(2π · 440t) + 0.00 sin(2π · 660t)</div>
+
+        <div class="section-title">Wave 1 Controls</div>
+        <div class="slider-group">
+          <div class="slider-header">
+            <label for="amplitude1">Amplitude (volume)</label>
+            <div class="value" id="amplitude1Value">0.50</div>
+          </div>
+          <input id="amplitude1" type="range" min="0" max="1" step="0.01" value="0.50" />
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <label for="frequency1">Frequency (pitch)</label>
+            <div class="value" id="frequency1Value">440 Hz</div>
+          </div>
+          <input id="frequency1" type="range" min="110" max="1000" step="1" value="440" />
+        </div>
+
+        <div class="section-title">Wave 2 Controls</div>
+        <div class="slider-group">
+          <div class="slider-header">
+            <label for="amplitude2">Amplitude</label>
+            <div class="value" id="amplitude2Value">0.00</div>
+          </div>
+          <input id="amplitude2" type="range" min="0" max="1" step="0.01" value="0.00" />
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <label for="frequency2">Frequency</label>
+            <div class="value" id="frequency2Value">660 Hz</div>
+          </div>
+          <input id="frequency2" type="range" min="110" max="1000" step="1" value="660" />
+        </div>
+
+        <div class="button-row">
+          <button id="playBtn">▶ Play</button>
+          <button id="stopBtn" class="button-secondary">■ Stop</button>
+          <button id="presetPure">Pure Tone</button>
+          <button id="presetCombo">Combined Sound</button>
+        </div>
+
+        <div class="quick-guide">
+          <strong>Quick demo order:</strong> press <strong>Pure Tone</strong>, click <strong>Play</strong>, raise amplitude for louder sound, raise frequency for higher pitch, then press <strong>Combined Sound</strong> to hear two sine waves together.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Waveform</div>
+        <canvas id="graph" width="820" height="340"></canvas>
+
+        <div class="legend">
+          <div class="legend-item"><span class="swatch wave1"></span> Wave 1</div>
+          <div class="legend-item"><span class="swatch wave2"></span> Wave 2</div>
+          <div class="legend-item"><span class="swatch combined"></span> Combined wave</div>
+        </div>
+
+        <div class="tip-box">
+          This graph shows how two sine waves combine to form a more complex wave. The resulting waveform is created by adding the individual functions together, demonstrating how mathematical equations can generate real sound.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const amplitude1 = document.getElementById('amplitude1');
+    const frequency1 = document.getElementById('frequency1');
+    const amplitude2 = document.getElementById('amplitude2');
+    const frequency2 = document.getElementById('frequency2');
+
+    const amplitude1Value = document.getElementById('amplitude1Value');
+    const frequency1Value = document.getElementById('frequency1Value');
+    const amplitude2Value = document.getElementById('amplitude2Value');
+    const frequency2Value = document.getElementById('frequency2Value');
+    const formula = document.getElementById('formula');
+
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const presetPure = document.getElementById('presetPure');
+    const presetCombo = document.getElementById('presetCombo');
+
+    const canvas = document.getElementById('graph');
+    const ctx = canvas.getContext('2d');
+
+    let audioContext = null;
+    let processor = null;
+    let sourceNode = null;
+    let globalTime = 0;
+
+    function updateLabels() {
+      amplitude1Value.textContent = Number(amplitude1.value).toFixed(2);
+      frequency1Value.textContent = `${frequency1.value} Hz`;
+      amplitude2Value.textContent = Number(amplitude2.value).toFixed(2);
+      frequency2Value.textContent = `${frequency2.value} Hz`;
+
+      formula.textContent = `y = ${Number(amplitude1.value).toFixed(2)} sin(2π · ${frequency1.value}t) + ${Number(amplitude2.value).toFixed(2)} sin(2π · ${frequency2.value}t)`;
+      drawWave();
+    }
+
+    function drawAxes() {
+      ctx.strokeStyle = 'rgba(255,255,255,0.88)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(46, canvas.height / 2);
+      ctx.lineTo(canvas.width - 18, canvas.height / 2);
+      ctx.moveTo(46, 18);
+      ctx.lineTo(46, canvas.height - 18);
+      ctx.stroke();
+
+      ctx.fillStyle = 'white';
+      ctx.font = '16px Arial';
+      ctx.fillText('x', canvas.width - 12, canvas.height / 2 - 10);
+      ctx.fillText('y', 18, 24);
+      ctx.fillText('0', 24, canvas.height / 2 + 5);
+      ctx.fillText('1', 24, 42);
+      ctx.fillText('-1', 15, canvas.height - 22);
+    }
+
+    function drawSingleWave(a, f, color) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      const width = canvas.width - 70;
+      const left = 46;
+      const midY = canvas.height / 2;
+      const scaleY = 82;
+      const timeWindow = 0.01;
+
+      for (let i = 0; i <= width; i++) {
+        const t = (i / width) * timeWindow;
+        const y = a * Math.sin(2 * Math.PI * f * t);
+        const px = left + i;
+        const py = midY - y * scaleY;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+
+      ctx.stroke();
+    }
+
+    function drawCombinedWave() {
+      const a1 = parseFloat(amplitude1.value);
+      const f1 = parseFloat(frequency1.value);
+      const a2 = parseFloat(amplitude2.value);
+      const f2 = parseFloat(frequency2.value);
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+
+      const width = canvas.width - 70;
+      const left = 46;
+      const midY = canvas.height / 2;
+      const scaleY = 82;
+      const timeWindow = 0.01;
+
+      for (let i = 0; i <= width; i++) {
+        const t = (i / width) * timeWindow;
+        const y = a1 * Math.sin(2 * Math.PI * f1 * t) + a2 * Math.sin(2 * Math.PI * f2 * t);
+        const px = left + i;
+        const py = midY - y * scaleY;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+
+      ctx.stroke();
+    }
+
+    function drawWave() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawAxes();
+      drawSingleWave(parseFloat(amplitude1.value), parseFloat(frequency1.value), '#d7a7ff');
+      drawSingleWave(parseFloat(amplitude2.value), parseFloat(frequency2.value), '#8ed8ff');
+      drawCombinedWave();
+    }
+
+    async function startAudio() {
+      if (audioContext) return;
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      processor = audioContext.createScriptProcessor(1024, 0, 1);
+      sourceNode = audioContext.createBufferSource();
+      sourceNode.buffer = audioContext.createBuffer(1, 1, audioContext.sampleRate);
+      sourceNode.loop = true;
+
+      processor.onaudioprocess = (e) => {
+        const output = e.outputBuffer.getChannelData(0);
+        const sampleRate = audioContext.sampleRate;
+        const a1 = parseFloat(amplitude1.value);
+        const f1 = parseFloat(frequency1.value);
+        const a2 = parseFloat(amplitude2.value);
+        const f2 = parseFloat(frequency2.value);
+
+        for (let i = 0; i < output.length; i++) {
+          const t = globalTime / sampleRate;
+          let sample = a1 * Math.sin(2 * Math.PI * f1 * t) + a2 * Math.sin(2 * Math.PI * f2 * t);
+          sample *= 0.5;
+          output[i] = sample;
+          globalTime++;
+        }
+      };
+
+      sourceNode.connect(processor);
+      processor.connect(audioContext.destination);
+      sourceNode.start();
+    }
+
+    function stopAudio() {
+      if (sourceNode) {
+        try { sourceNode.stop(); } catch (e) {}
+        sourceNode.disconnect();
+        sourceNode = null;
+      }
+      if (processor) {
+        processor.disconnect();
+        processor = null;
+      }
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+      globalTime = 0;
+    }
+
+    playBtn.addEventListener('click', startAudio);
+    stopBtn.addEventListener('click', stopAudio);
+
+    presetPure.addEventListener('click', () => {
+      amplitude1.value = '0.50';
+      frequency1.value = '440';
+      amplitude2.value = '0.00';
+      frequency2.value = '660';
+      updateLabels();
+    });
+
+    presetCombo.addEventListener('click', () => {
+      amplitude1.value = '0.45';
+      frequency1.value = '440';
+      amplitude2.value = '0.25';
+      frequency2.value = '660';
+      updateLabels();
+    });
+
+    [amplitude1, frequency1, amplitude2, frequency2].forEach(input => {
+      input.addEventListener('input', updateLabels);
+    });
+
+    updateLabels();
+  </script>
+</body>
+</html>
